@@ -68,4 +68,14 @@ public class Body {
 			total_force = total_force + calcForceExertedByY(b);
 		} return total_force;
 	}
+
+	public void update(double dt, double fX, double fY) {
+		double a_x = fX/mass;
+		double a_y = fY/mass;
+		xxVel = xxVel + (a_x * dt);
+		yyVel = yyVel + (a_y * dt);
+		xxPos = xxPos + (xxVel * dt);
+		yyPos = yyPos + (yyVel * dt);
+
+	}
 }
