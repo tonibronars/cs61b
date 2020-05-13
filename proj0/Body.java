@@ -23,4 +23,10 @@ public class Body {
 		mass = b.mass;
 		imgFileName = b.imgFileName;
 	}
+
+	public double calcDistance(Body other) {
+		double x_dist = Math.abs(xxPos - other.xxPos);
+		double y_dist = Math.abs(yyPos - other.yyPos);
+		return Math.sqrt((x_dist*x_dist) + (y_dist*y_dist));
+	}
 }
