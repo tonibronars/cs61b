@@ -6,6 +6,8 @@ public class Body {
 	public double mass;
 	public String imgFileName;
 
+	public static final double g_constant = 6.67e-11;
+
 	public Body(double xP, double yP, double xV, double yV, double m, String img) {
 		xxPos = xP;
 		yyPos = yP;
@@ -28,5 +30,10 @@ public class Body {
 		double x_dist = Math.abs(xxPos - other.xxPos);
 		double y_dist = Math.abs(yyPos - other.yyPos);
 		return Math.sqrt((x_dist*x_dist) + (y_dist*y_dist));
+	}
+
+	public double calcForceExertedBy(Body other) {
+		double dist = calcDistance(other);
+		return (g_constant * mass * other.mass)/(dist*dist);
 	}
 }
