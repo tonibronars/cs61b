@@ -50,4 +50,22 @@ public class Body {
 		double y_dist = other.yyPos - yyPos;
 		return force*y_dist/dist;
 	}
+
+	public double calcNetForceExertedByX(Body[] allBodys) {
+		double total_force = 0;
+		for (Body b : allBodys) {
+			if (this.equals(b))
+				continue;
+			total_force = total_force + calcForceExertedByX(b);
+		} return total_force;
+	}
+
+	public double calcNetForceExertedByY(Body[] allBodys) {
+		double total_force = 0;
+		for (Body b : allBodys) {
+			if (this.equals(b))
+				continue;
+			total_force = total_force + calcForceExertedByY(b);
+		} return total_force;
+	}
 }
