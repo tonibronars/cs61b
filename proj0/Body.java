@@ -27,13 +27,27 @@ public class Body {
 	}
 
 	public double calcDistance(Body other) {
-		double x_dist = Math.abs(xxPos - other.xxPos);
-		double y_dist = Math.abs(yyPos - other.yyPos);
+		double x_dist = other.xxPos - xxPos;
+		double y_dist = other.yyPos - yyPos;
 		return Math.sqrt((x_dist*x_dist) + (y_dist*y_dist));
 	}
 
 	public double calcForceExertedBy(Body other) {
 		double dist = calcDistance(other);
 		return (g_constant * mass * other.mass)/(dist*dist);
+	}
+
+	public double calcForceExertedByX(Body other) {
+		double dist = calcDistance(other);
+		double force = calcForceExertedBy(other);
+		double x_dist = other.xxPos - xxPos;
+		return force*x_dist/dist;
+	}
+
+	public double calcForceExertedByY(Body other) {
+		double dist = calcDistance(other);
+		double force = calcForceExertedBy(other);
+		double y_dist = other.yyPos - yyPos;
+		return force*y_dist/dist;
 	}
 }
