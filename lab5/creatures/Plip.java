@@ -10,6 +10,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 
+import static huglife.HugLifeUtils.randomEntry;
+
 /**
  * An implementation of a motile pacifist photosynthesizer.
  *
@@ -57,7 +59,9 @@ public class Plip extends Creature {
      * that you get this exactly correct.
      */
     public Color color() {
-        g = 63;
+        r = 99;
+        b = 76;
+        g = (int) (63+(96*energy));
         return color(r, g, b);
     }
 
@@ -75,6 +79,8 @@ public class Plip extends Creature {
      */
     public void move() {
         // TODO
+        energy = energy - 0.15;
+        if(energy < 0) { energy = 0; }
     }
 
 
@@ -83,6 +89,8 @@ public class Plip extends Creature {
      */
     public void stay() {
         // TODO
+        energy = energy + 0.2;
+        if(energy > 2) { energy = 2; }
     }
 
     /**
@@ -91,7 +99,8 @@ public class Plip extends Creature {
      * Plip.
      */
     public Plip replicate() {
-        return this;
+        energy = energy/2;
+        return new Plip(energy);
     }
 
     /**
@@ -113,16 +122,32 @@ public class Plip extends Creature {
         boolean anyClorus = false;
         // TODO
         // (Google: Enhanced for-loop over keys of NEIGHBORS?)
-        // for () {...}
-
-        if (false) { // FIXME
-            // TODO
+        for (Direction dir : neighbors.keySet()) {
+            if(neighbors.get(dir).name().equals("empty")) {
+                emptyNeighbors.addLast(dir);
+            }
+            if(neighbors.get(dir).name().equals("clorus")) {
+                anyClorus = true;
+            }
+        }
+        if(emptyNeighbors.isEmpty()) {
+            return new Action(Action.ActionType.STAY);
         }
 
         // Rule 2
         // HINT: randomEntry(emptyNeighbors)
+        else if(energy >= 1) {
+            return new Action(Action.ActionType.REPLICATE, randomEntry(emptyNeighbors));
+        }
 
         // Rule 3
+        else if(anyClorus) {
+            if(Math.random() < 0.5) {
+                return new Action(Action.ActionType.MOVE, randomEntry(emptyNeighbors));
+            } else {
+                return new Action(Action.ActionType.STAY);
+            }
+        }
 
         // Rule 4
         return new Action(Action.ActionType.STAY);
