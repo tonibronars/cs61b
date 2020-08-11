@@ -1,11 +1,8 @@
 package es.datastructur.synthesizer;
+import java.lang.reflect.Array;
 import java.util.Iterator;
 
-//TODO: Make sure to that this class and all of its methods are public
-//TODO: Make sure to add the override tag for all overridden methods
-//TODO: Make sure to make this class implement BoundedQueue<T>
-
-public class ArrayRingBuffer<T>  {
+public class ArrayRingBuffer<T> implements BoundedQueue<T> {
     /* Index for the next dequeue or peek. */
     private int first;
     /* Index for the next enqueue. */
@@ -16,31 +13,84 @@ public class ArrayRingBuffer<T>  {
     private T[] rb;
 
     /**
+     * Private class for turning the ArrayRingBuffer into an iterable
+     */
+    private class ArrayRingBufferIterator<T> implements Iterator<T> {
+        private int count = 0;
+        private int curr_position = first;
+
+        @Override
+        public boolean hasNext() {
+            return !(count==fillCount());
+        }
+        @Override
+        public T next() {
+            T curr_item = (T) rb[curr_position]; // store the current item
+            curr_position = next_index(curr_position); // advance the counter
+            count += 1; // increment count
+            return curr_item;
+        }
+    }
+
+    /**
+     * Private method for computing the next available index
+     */
+    private int next_index(int curr) {
+        if(curr==(rb.length-1)){
+            return 0;
+        } else {
+            return curr+=1;
+        }
+    }
+
+    /**
      * Create a new ArrayRingBuffer with the given capacity.
      */
     public ArrayRingBuffer(int capacity) {
-        // TODO: Create new array with capacity elements.
-        //       first, last, and fillCount should all be set to 0.
+        rb = (T[]) new Object[capacity];
+        first = 0;
+        last = 0;
+        fillCount = 0;
     }
 
     /**
      * Adds x to the end of the ring buffer. If there is no room, then
      * throw new RuntimeException("Ring buffer overflow").
      */
+    @Override
     public void enqueue(T x) {
-        // TODO: Enqueue the item. Don't forget to increase fillCount and update
-        //       last.
+        if(isFull()) {
+            throw new RuntimeException("Ring buffer overflow");
+        }
+        rb[last] = x;
+        last = next_index(last);
+        fillCount+=1;
         return;
+    }
+
+    @Override
+    public int capacity() {
+        return rb.length;
+    }
+
+    @Override
+    public int fillCount() {
+        return fillCount;
     }
 
     /**
      * Dequeue oldest item in the ring buffer. If the buffer is empty, then
      * throw new RuntimeException("Ring buffer underflow").
      */
+    @Override
     public T dequeue() {
-        // TODO: Dequeue the first item. Don't forget to decrease fillCount and
-        //       update first.
-        return null;
+        if(isEmpty()) {
+            throw new RuntimeException("Ring buffer underflow");
+        }
+        T first_item = rb[first];
+        first = next_index(first);
+        fillCount -= 1;
+        return first_item;
     }
 
     /**
@@ -48,12 +98,30 @@ public class ArrayRingBuffer<T>  {
      * throw new RuntimeException("Ring buffer underflow").
      */
     public T peek() {
-        // TODO: Return the first item. None of your instance variables should
-        //       change.
-        return null;
+        if(isEmpty()) {
+            throw new RuntimeException("Ring buffer underflow");
+        }
+        return rb[first];
     }
 
-    // TODO: When you get to part 4, implement the needed code to support
-    //       iteration and equals.
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayRingBufferIterator();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o==null){ return false; } // false if o is null
+        if(!(o instanceof ArrayRingBuffer)) { return false; } // false if o is not an ArrayRingBuffer
+
+        ArrayRingBuffer<T> other = (ArrayRingBuffer<T>) o;
+        if(other.fillCount() != this.fillCount()) { return false; } // false if objects don't have the same number of elements
+
+        Iterator this_iter = this.iterator();
+        Iterator other_iter = other.iterator();
+        while(this_iter.hasNext()) {
+            if(this_iter.next() != other_iter.next()) { return false; }
+        }
+        return true;
+    }
 }
-    // TODO: Remove all comments that say TODO when you're done.
